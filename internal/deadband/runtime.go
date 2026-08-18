@@ -79,8 +79,13 @@ func DumpItemsCSV(path, body string) error {
 	}
 	defer f.Close()
 	w := bufio.NewWriterSize(f, 4096)
-	_, err = w.WriteString(body)
-	return err
+	if _, err := w.WriteString(body); err != nil {
+		return err
+	}
+	if err := w.Flush(); err != nil {
+		return err
+	}
+	return f.Sync()
 }
 
 func GrowSamples(dst []float64, extra float64) []float64 {
